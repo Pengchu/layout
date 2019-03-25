@@ -59,6 +59,30 @@ class AdminArticleController extends AdminBaseController
     }
 
     /**
+     * bootstrapTable 获取数据ajax请求函数
+     * @return [type] [description]
+     */
+    public function ajax_list() {
+        
+        $postService = new PostService();
+        $data        = $postService->adminArticleList(array());
+
+        $articles = $data->items();
+        if (!empty($articles)) {
+            foreach ($articles as $key => $value) {
+                $articles[$key]['post_status'] = $value['post_status'] ? "<i class='ion-checkmark i-icon icon-success add-tooltip' data-toggle='tooltip' data-original-title='是'></i>" : "<i class='ion-close i-icon icon-danger add-tooltip' data-toggle='tooltip' data-original-title='不是'></i>";
+                $articles[$key]['update_time'] = date('Y-m-d H:i:s', $value['update_time']);
+                // $articles[$key]['published_time'] =  date('Y-m-d H:i:s', $value['published_time']);
+                $articles[$key]['edit_url'] = url('portal/AdminArticle/edit', array('id' => $value['id']));
+                $articles[$key]['del_url'] = url('portal/AdminArticle/del', array('id' => $value['id']));
+            }
+            echo json_encode(['code' => 200, 'data' => $articles]);
+            exit;
+        }
+        echo json_encode(['code' => 400, 'data' => null]);
+    }
+
+    /**
      * 添加文章
      * @adminMenu(
      *     'name'   => '添加文章',
